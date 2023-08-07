@@ -3,7 +3,7 @@ import './App.css';
 
 type SquareValue = 'X' | 'O' | null;
 
-const Calculator = () => {
+const TicTacToe = () => {
   const [board, setBoard] = useState<Array<SquareValue>>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState<boolean>(true);
 
@@ -69,4 +69,4 @@ function calculateWinner(board: SquareValue[]): SquareValue | null {
   return null;
 }
 
-export default Calculator;
+export default TicTacToe;
