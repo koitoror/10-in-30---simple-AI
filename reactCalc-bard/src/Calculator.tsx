@@ -1,72 +1,86 @@
-import React, { useState } from 'react';
-import './App.css';
-
-type SquareValue = 'X' | 'O' | null;
+import React, { useState } from "react";
+import "./calculator.css";
 
 const Calculator = () => {
-  const [board, setBoard] = useState<Array<SquareValue>>(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState<boolean>(true);
+  const [firstNumber, setFirstNumber] = useState<string>("");
+  const [secondNumber, setSecondNumber] = useState<string>("");
+  const [operator, setOperator] = useState<string>("");
+  const [result, setResult] = useState<number>();
 
-  const handleClick = (index: number) => {
-    if (board[index] || calculateWinner(board)) {
-      return;
+  const handleNumberClick = (number: string) => {
+    if (operator === "") {
+      setFirstNumber(firstNumber + number);
+    } else {
+      setSecondNumber(secondNumber + number);
     }
-
-    const newBoard: SquareValue[] = [...board];
-    newBoard[index] = isXNext ? 'X' : 'O';
-    setBoard(newBoard);
-    setIsXNext(!isXNext);
   };
 
-  const renderSquare = (index: number) => {
-    return (
-      <button className="square" onClick={() => handleClick(index)}>
-        {board[index]}
-      </button>
-    );
+  const handleOperatorClick = (operator: string) => {
+    setOperator(operator);
+    setFirstNumber(firstNumber.slice(0, -1));
+    setSecondNumber("");
   };
 
-  const winner = calculateWinner(board);
-  let status: string;
-  if (winner) {
-    status = `Winner: ${winner}`;
-  } else if (board.every((square) => square !== null)) {
-    status = "It's a draw!";
-  } else {
-    status = `Next player: ${isXNext ? 'X' : 'O'}`;
-  }
+  const handleEqualClick = () => {
+    const calculation = calculate(firstNumber, secondNumber, operator);
+    setResult(calculation);
+  };
+
+  const calculate = (firstNumber: string, secondNumber: string, operator: string) => {
+    const firstNumberNumber = Number(firstNumber);
+    const secondNumberNumber = Number(secondNumber);
+
+    switch (operator) {
+      case "+":
+        return firstNumberNumber + secondNumberNumber;
+      case "-":
+        return firstNumberNumber - secondNumberNumber;
+      case "*":
+        return firstNumberNumber * secondNumberNumber;
+      case "/":
+        return firstNumberNumber / secondNumberNumber;
+      default:
+        return 0;
+    }
+  };
 
   return (
-    <div className="app">
-      <div className="status">{status}</div>
-      <div className="board">
-        {Array(9)
-          .fill(null)
-          .map((_, index) => renderSquare(index))}
+    <div
+      className="calculator"
+      style={{
+        margin: 0,
+        padding: 0,
+        position: "absolute",
+        top: 50%,
+        left: 50%,
+        transform: "translate(-50%, -50%)",
+      }}
+    >
+      <h1>Calculator</h1>
+      <div>
+        <input
+          type="text"
+          value={firstNumber}
+          onChange={(event) => setFirstNumber(event.target.value)}
+        />
+        <select value={operator} onChange={(event) => setOperator(event.target.value)}>
+          <option value="+">+</option>
+          <option value="-">-</option>
+          <option value="*">*</option>
+          <option value="/">/</option>
+        </select>
+        <input
+          type="text"
+          value={secondNumber}
+          onChange={(event) => setSecondNumber(event.target.value)}
+        />
+      </div>
+      <button onClick={handleEqualClick}>=</button>
+      <div>
+        <h2>{result}</h2>
       </div>
     </div>
   );
-}
-
-function calculateWinner(board: SquareValue[]): SquareValue | null {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  for (const [a, b, c] of lines) {
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a];
-    }
-  }
-
-  return null;
-}
+};
 
 export default Calculator;
